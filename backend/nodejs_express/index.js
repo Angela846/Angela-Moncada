@@ -2,7 +2,7 @@ const http = require('http');
 const app = require('./server');
 const cors = require('cors');
 const port = process.env.PORT || 3000;
-const host = process.env.HOST || '10.1.206.218';
+const host = process.env.HOST || '10.1.216.182';
 
 // Configuración CORS
 app.use(cors({

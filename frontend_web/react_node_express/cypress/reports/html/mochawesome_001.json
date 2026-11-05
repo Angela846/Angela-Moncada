@@ -1,0 +1,194 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 5,
+    "passes": 2,
+    "pending": 0,
+    "failures": 3,
+    "start": "2026-11-03T22:16:40.123Z",
+    "end": "2026-11-03T22:16:50.456Z",
+    "duration": 10333,
+    "testsRegistered": 5,
+    "passPercent": 40,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "851f60e3-1e58-42da-9177-6035b35c700b",
+      "title": "",
+      "fullFile": "cypress\\e2e\\acceptance\\users.acceptance.cy.js",
+      "file": "cypress\\e2e\\acceptance\\users.acceptance.cy.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "d8599373-5f9a-4a0c-b7eb-5ed9e07b4d7a",
+          "title": "Nivel 5: Pruebas de Aceptación (UAT) - Criterios del Cliente",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "AT-01: El cliente debe poder registrarse y ver un mensaje de confirmación",
+              "fullTitle": "Nivel 5: Pruebas de Aceptación (UAT) - Criterios del Cliente AT-01: El cliente debe poder registrarse y ver un mensaje de confirmación",
+              "timedOut": null,
+              "duration": 6088,
+              "state": "passed",
+              "speed": "medium",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.visit('/register');\n// Generamos datos únicos para el nuevo cliente\nconst emailCliente = `cliente_${Date.now()}@test.com`;\n// Llenamos el formulario de registro\ncy.get('input[name=\"name\"]').type('Cliente');\ncy.get('input[name=\"lastname\"]').type('Aceptacion');\ncy.get('input[name=\"email\"]').type(emailCliente);\ncy.get('input[name=\"phone\"]').type('3001234567');\ncy.get('input[name=\"password\"]').type('password123');\ncy.get('input[name=\"confirmPassword\"]').type('password123');\n// Por defecto el rol es 'user', así que lo dejamos así\ncy.get('button[type=\"submit\"]').click();\n// El sistema debe confirmar el registro (AlertMessage de éxito)\ncy.contains('Usuario registrado exitosamente').should('be.visible');\n// Y debe redirigir al login después de 2 segundos (según su código)\ncy.url().should('include', '/login', {\n  timeout: 5000\n});",
+              "err": {},
+              "uuid": "3b86c729-0447-498a-bff9-0f45e0dba6b1",
+              "parentUUID": "d8599373-5f9a-4a0c-b7eb-5ed9e07b4d7a",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "AT-02: Un usuario con rol \"Vendedor\" no debe ver el botón de eliminar",
+              "fullTitle": "Nivel 5: Pruebas de Aceptación (UAT) - Criterios del Cliente AT-02: Un usuario con rol \"Vendedor\" no debe ver el botón de eliminar",
+              "timedOut": null,
+              "duration": 1256,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "// 1. Creamos un usuario vendedor por API para agilizar el test\nconst emailVendedor = `vendedor_${Date.now()}@test.com`;\ncy.request({\n  method: 'POST',\n  url: 'http://10.1.216.182:3000/api/users/create',\n  // 👈 Asegúrese de usar su IP correcta\n  body: {\n    name: \"Vendedor\",\n    lastname: \"Test\",\n    email: emailVendedor,\n    password: \"password123\",\n    role: \"seller\" // 👈 Forzamos el rol de vendedor\n  }\n});\n// 2. Hacemos login con ese vendedor\ncy.login(emailVendedor, 'password123');\ncy.visit('/dashboard');\ncy.contains('button', 'Usuarios').click();\n// 3. Buscamos el botón de eliminar en la tabla\n// Debe existir en el DOM, pero estar deshabilitado por la lógica de React (canDelete)\ncy.get('button.btn-delete').first().should('be.disabled');",
+              "err": {},
+              "uuid": "5efb75a6-5714-49b0-8d25-2532263315f8",
+              "parentUUID": "d8599373-5f9a-4a0c-b7eb-5ed9e07b4d7a",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "AT-03: Un administrador no debe poder eliminar su propio usuario",
+              "fullTitle": "Nivel 5: Pruebas de Aceptación (UAT) - Criterios del Cliente AT-03: Un administrador no debe poder eliminar su propio usuario",
+              "timedOut": null,
+              "duration": 342,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "cy.login('admin@test.com', 'password123');\ncy.visit('/dashboard');\ncy.contains('button', 'Usuarios').click();\n// Buscamos la fila del administrador logueado\ncy.contains('tr', 'admin@test.com').within(() => {\n  // Verificamos que el botón de eliminar esté deshabilitado (por la lógica de React)\n  cy.get('button.btn-delete').should('be.disabled');\n});",
+              "err": {
+                "message": "CypressError: `cy.request()` failed on:\n\nhttp://10.1.216.182:3000/api/users/login\n\nThe response we received from your web server was:\n\n  > 401: Unauthorized\n\nThis was considered a failure because the status code was not `2xx` or `3xx`.\n\nIf you do not want status codes to cause failures pass the option: `failOnStatusCode: false`\n\n-----------------------------------------------------------\n\nThe request we sent was:\n\nMethod: POST\nURL: http://10.1.216.182:3000/api/users/login\nHeaders: {\n  \"Connection\": \"keep-alive\",\n  \"user-agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Cypress/16.2.1 Chrome/146.0.7680.216 Electron/41.7.0 Safari/537.36\",\n  \"accept\": \"*/*\",\n  \"accept-encoding\": \"gzip, deflate\",\n  \"content-type\": \"application/json\",\n  \"content-length\": 51\n}\nBody: {\"email\":\"admin@test.com\",\"password\":\"password123\"}\n\n-----------------------------------------------------------\n\nThe response we got was:\n\nStatus: 401 - Unauthorized\nHeaders: {\n  \"x-powered-by\": \"Express\",\n  \"access-control-allow-origin\": \"*\",\n  \"content-type\": \"application/json; charset=utf-8\",\n  \"content-length\": \"61\",\n  \"etag\": \"W/\\\"3d-YLOJueBlBnzYvkc+uGANUZCCCEw\\\"\",\n  \"date\": \"Tue, 03 Nov 2026 22:16:48 GMT\",\n  \"connection\": \"keep-alive\",\n  \"keep-alive\": \"timeout=5\"\n}\nBody: {\n  \"success\": false,\n  \"message\": \"Contraseña o correo incorrecto\"\n}\n\n\nhttps://on.cypress.io/request",
+                "estack": "CypressError: `cy.request()` failed on:\n\nhttp://10.1.216.182:3000/api/users/login\n\nThe response we received from your web server was:\n\n  > 401: Unauthorized\n\nThis was considered a failure because the status code was not `2xx` or `3xx`.\n\nIf you do not want status codes to cause failures pass the option: `failOnStatusCode: false`\n\n-----------------------------------------------------------\n\nThe request we sent was:\n\nMethod: POST\nURL: http://10.1.216.182:3000/api/users/login\nHeaders: {\n  \"Connection\": \"keep-alive\",\n  \"user-agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Cypress/16.2.1 Chrome/146.0.7680.216 Electron/41.7.0 Safari/537.36\",\n  \"accept\": \"*/*\",\n  \"accept-encoding\": \"gzip, deflate\",\n  \"content-type\": \"application/json\",\n  \"content-length\": 51\n}\nBody: {\"email\":\"admin@test.com\",\"password\":\"password123\"}\n\n-----------------------------------------------------------\n\nThe response we got was:\n\nStatus: 401 - Unauthorized\nHeaders: {\n  \"x-powered-by\": \"Express\",\n  \"access-control-allow-origin\": \"*\",\n  \"content-type\": \"application/json; charset=utf-8\",\n  \"content-length\": \"61\",\n  \"etag\": \"W/\\\"3d-YLOJueBlBnzYvkc+uGANUZCCCEw\\\"\",\n  \"date\": \"Tue, 03 Nov 2026 22:16:48 GMT\",\n  \"connection\": \"keep-alive\",\n  \"keep-alive\": \"timeout=5\"\n}\nBody: {\n  \"success\": false,\n  \"message\": \"Contraseña o correo incorrecto\"\n}\n\n\nhttps://on.cypress.io/request\n    at <unknown> (http://localhost:5173/__cypress/runner/cypress_runner.js:143286:72)\n    at tryCatcher (http://localhost:5173/__cypress/runner/cypress_runner.js:1780:23)\n    at Promise._settlePromiseFromHandler (http://localhost:5173/__cypress/runner/cypress_runner.js:1492:31)\n    at Promise._settlePromise (http://localhost:5173/__cypress/runner/cypress_runner.js:1549:18)\n    at Promise._settlePromise0 (http://localhost:5173/__cypress/runner/cypress_runner.js:1594:10)\n    at Promise._settlePromises (http://localhost:5173/__cypress/runner/cypress_runner.js:1674:18)\n    at _drainQueueStep (http://localhost:5173/__cypress/runner/cypress_runner.js:2380:12)\n    at _drainQueue (http://localhost:5173/__cypress/runner/cypress_runner.js:2373:9)\n    at Async._drainQueues (http://localhost:5173/__cypress/runner/cypress_runner.js:2389:5)\n    at Async.drainQueues (http://localhost:5173/__cypress/runner/cypress_runner.js:2259:14)\nFrom Your Spec Code:\n    at Context.eval (webpack://sis-web-mvc/./cypress/support/commands.js:4:5)\n    at wrapped (http://localhost:5173/__cypress/runner/cypress_runner.js:155025:43)",
+                "diff": null
+              },
+              "uuid": "25023fcc-2198-4c4b-b8d0-ae28a57cb42b",
+              "parentUUID": "d8599373-5f9a-4a0c-b7eb-5ed9e07b4d7a",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "AT-04: Los datos creados deben persistir al recargar la página",
+              "fullTitle": "Nivel 5: Pruebas de Aceptación (UAT) - Criterios del Cliente AT-04: Los datos creados deben persistir al recargar la página",
+              "timedOut": null,
+              "duration": 373,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "cy.login('admin@test.com', 'password123');\ncy.visit('/dashboard');\ncy.contains('button', 'Usuarios').click();\n// Creamos un usuario rápido\nconst emailPersistente = `persistente_${Date.now()}@test.com`;\ncy.request({\n  method: 'POST',\n  url: 'http://10.1.216.182:3000/api/users/create',\n  // 👈 Asegúrese de usar su IP correcta\n  body: {\n    name: \"Persistente\",\n    lastname: \"Test\",\n    email: emailPersistente,\n    password: \"123\"\n  }\n});\n// Recargamos la página fuertemente\ncy.reload();\ncy.contains('button', 'Usuarios').click();\n// El usuario debe seguir en la tabla (porque está en la BD real)\ncy.get('table').should('contain', emailPersistente);",
+              "err": {
+                "message": "CypressError: `cy.request()` failed on:\n\nhttp://10.1.216.182:3000/api/users/login\n\nThe response we received from your web server was:\n\n  > 401: Unauthorized\n\nThis was considered a failure because the status code was not `2xx` or `3xx`.\n\nIf you do not want status codes to cause failures pass the option: `failOnStatusCode: false`\n\n-----------------------------------------------------------\n\nThe request we sent was:\n\nMethod: POST\nURL: http://10.1.216.182:3000/api/users/login\nHeaders: {\n  \"Connection\": \"keep-alive\",\n  \"user-agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Cypress/16.2.1 Chrome/146.0.7680.216 Electron/41.7.0 Safari/537.36\",\n  \"accept\": \"*/*\",\n  \"accept-encoding\": \"gzip, deflate\",\n  \"content-type\": \"application/json\",\n  \"content-length\": 51\n}\nBody: {\"email\":\"admin@test.com\",\"password\":\"password123\"}\n\n-----------------------------------------------------------\n\nThe response we got was:\n\nStatus: 401 - Unauthorized\nHeaders: {\n  \"x-powered-by\": \"Express\",\n  \"access-control-allow-origin\": \"*\",\n  \"content-type\": \"application/json; charset=utf-8\",\n  \"content-length\": \"61\",\n  \"etag\": \"W/\\\"3d-YLOJueBlBnzYvkc+uGANUZCCCEw\\\"\",\n  \"date\": \"Tue, 03 Nov 2026 22:16:49 GMT\",\n  \"connection\": \"keep-alive\",\n  \"keep-alive\": \"timeout=5\"\n}\nBody: {\n  \"success\": false,\n  \"message\": \"Contraseña o correo incorrecto\"\n}\n\n\nhttps://on.cypress.io/request",
+                "estack": "CypressError: `cy.request()` failed on:\n\nhttp://10.1.216.182:3000/api/users/login\n\nThe response we received from your web server was:\n\n  > 401: Unauthorized\n\nThis was considered a failure because the status code was not `2xx` or `3xx`.\n\nIf you do not want status codes to cause failures pass the option: `failOnStatusCode: false`\n\n-----------------------------------------------------------\n\nThe request we sent was:\n\nMethod: POST\nURL: http://10.1.216.182:3000/api/users/login\nHeaders: {\n  \"Connection\": \"keep-alive\",\n  \"user-agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Cypress/16.2.1 Chrome/146.0.7680.216 Electron/41.7.0 Safari/537.36\",\n  \"accept\": \"*/*\",\n  \"accept-encoding\": \"gzip, deflate\",\n  \"content-type\": \"application/json\",\n  \"content-length\": 51\n}\nBody: {\"email\":\"admin@test.com\",\"password\":\"password123\"}\n\n-----------------------------------------------------------\n\nThe response we got was:\n\nStatus: 401 - Unauthorized\nHeaders: {\n  \"x-powered-by\": \"Express\",\n  \"access-control-allow-origin\": \"*\",\n  \"content-type\": \"application/json; charset=utf-8\",\n  \"content-length\": \"61\",\n  \"etag\": \"W/\\\"3d-YLOJueBlBnzYvkc+uGANUZCCCEw\\\"\",\n  \"date\": \"Tue, 03 Nov 2026 22:16:49 GMT\",\n  \"connection\": \"keep-alive\",\n  \"keep-alive\": \"timeout=5\"\n}\nBody: {\n  \"success\": false,\n  \"message\": \"Contraseña o correo incorrecto\"\n}\n\n\nhttps://on.cypress.io/request\n    at <unknown> (http://localhost:5173/__cypress/runner/cypress_runner.js:143286:72)\n    at tryCatcher (http://localhost:5173/__cypress/runner/cypress_runner.js:1780:23)\n    at Promise._settlePromiseFromHandler (http://localhost:5173/__cypress/runner/cypress_runner.js:1492:31)\n    at Promise._settlePromise (http://localhost:5173/__cypress/runner/cypress_runner.js:1549:18)\n    at Promise._settlePromise0 (http://localhost:5173/__cypress/runner/cypress_runner.js:1594:10)\n    at Promise._settlePromises (http://localhost:5173/__cypress/runner/cypress_runner.js:1674:18)\n    at _drainQueueStep (http://localhost:5173/__cypress/runner/cypress_runner.js:2380:12)\n    at _drainQueue (http://localhost:5173/__cypress/runner/cypress_runner.js:2373:9)\n    at Async._drainQueues (http://localhost:5173/__cypress/runner/cypress_runner.js:2389:5)\n    at Async.drainQueues (http://localhost:5173/__cypress/runner/cypress_runner.js:2259:14)\nFrom Your Spec Code:\n    at Context.eval (webpack://sis-web-mvc/./cypress/support/commands.js:4:5)\n    at wrapped (http://localhost:5173/__cypress/runner/cypress_runner.js:155025:43)",
+                "diff": null
+              },
+              "uuid": "9c2a6d17-1c25-4fbf-a8f2-77b0d8905f68",
+              "parentUUID": "d8599373-5f9a-4a0c-b7eb-5ed9e07b4d7a",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "AT-05: El usuario debe poder cerrar sesión y limpiar el almacenamiento local",
+              "fullTitle": "Nivel 5: Pruebas de Aceptación (UAT) - Criterios del Cliente AT-05: El usuario debe poder cerrar sesión y limpiar el almacenamiento local",
+              "timedOut": null,
+              "duration": 397,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "cy.login('admin@test.com', 'password123');\ncy.visit('/dashboard');\n// Hacemos clic en Cerrar Sesión (está en el Header del Dashboard)\ncy.contains('button', 'Cerrar Sesión').click();\n// Verificamos que redirige al login\ncy.url().should('include', '/login');\n// Verificamos que el token y los datos del usuario se borraron\ncy.window().then(win => {\n  expect(win.localStorage.getItem('auth_token')).to.be.null;\n  expect(win.localStorage.getItem('user_data')).to.be.null;\n});",
+              "err": {
+                "message": "CypressError: `cy.request()` failed on:\n\nhttp://10.1.216.182:3000/api/users/login\n\nThe response we received from your web server was:\n\n  > 401: Unauthorized\n\nThis was considered a failure because the status code was not `2xx` or `3xx`.\n\nIf you do not want status codes to cause failures pass the option: `failOnStatusCode: false`\n\n-----------------------------------------------------------\n\nThe request we sent was:\n\nMethod: POST\nURL: http://10.1.216.182:3000/api/users/login\nHeaders: {\n  \"Connection\": \"keep-alive\",\n  \"user-agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Cypress/16.2.1 Chrome/146.0.7680.216 Electron/41.7.0 Safari/537.36\",\n  \"accept\": \"*/*\",\n  \"accept-encoding\": \"gzip, deflate\",\n  \"content-type\": \"application/json\",\n  \"content-length\": 51\n}\nBody: {\"email\":\"admin@test.com\",\"password\":\"password123\"}\n\n-----------------------------------------------------------\n\nThe response we got was:\n\nStatus: 401 - Unauthorized\nHeaders: {\n  \"x-powered-by\": \"Express\",\n  \"access-control-allow-origin\": \"*\",\n  \"content-type\": \"application/json; charset=utf-8\",\n  \"content-length\": \"61\",\n  \"etag\": \"W/\\\"3d-YLOJueBlBnzYvkc+uGANUZCCCEw\\\"\",\n  \"date\": \"Tue, 03 Nov 2026 22:16:50 GMT\",\n  \"connection\": \"keep-alive\",\n  \"keep-alive\": \"timeout=5\"\n}\nBody: {\n  \"success\": false,\n  \"message\": \"Contraseña o correo incorrecto\"\n}\n\n\nhttps://on.cypress.io/request",
+                "estack": "CypressError: `cy.request()` failed on:\n\nhttp://10.1.216.182:3000/api/users/login\n\nThe response we received from your web server was:\n\n  > 401: Unauthorized\n\nThis was considered a failure because the status code was not `2xx` or `3xx`.\n\nIf you do not want status codes to cause failures pass the option: `failOnStatusCode: false`\n\n-----------------------------------------------------------\n\nThe request we sent was:\n\nMethod: POST\nURL: http://10.1.216.182:3000/api/users/login\nHeaders: {\n  \"Connection\": \"keep-alive\",\n  \"user-agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Cypress/16.2.1 Chrome/146.0.7680.216 Electron/41.7.0 Safari/537.36\",\n  \"accept\": \"*/*\",\n  \"accept-encoding\": \"gzip, deflate\",\n  \"content-type\": \"application/json\",\n  \"content-length\": 51\n}\nBody: {\"email\":\"admin@test.com\",\"password\":\"password123\"}\n\n-----------------------------------------------------------\n\nThe response we got was:\n\nStatus: 401 - Unauthorized\nHeaders: {\n  \"x-powered-by\": \"Express\",\n  \"access-control-allow-origin\": \"*\",\n  \"content-type\": \"application/json; charset=utf-8\",\n  \"content-length\": \"61\",\n  \"etag\": \"W/\\\"3d-YLOJueBlBnzYvkc+uGANUZCCCEw\\\"\",\n  \"date\": \"Tue, 03 Nov 2026 22:16:50 GMT\",\n  \"connection\": \"keep-alive\",\n  \"keep-alive\": \"timeout=5\"\n}\nBody: {\n  \"success\": false,\n  \"message\": \"Contraseña o correo incorrecto\"\n}\n\n\nhttps://on.cypress.io/request\n    at <unknown> (http://localhost:5173/__cypress/runner/cypress_runner.js:143286:72)\n    at tryCatcher (http://localhost:5173/__cypress/runner/cypress_runner.js:1780:23)\n    at Promise._settlePromiseFromHandler (http://localhost:5173/__cypress/runner/cypress_runner.js:1492:31)\n    at Promise._settlePromise (http://localhost:5173/__cypress/runner/cypress_runner.js:1549:18)\n    at Promise._settlePromise0 (http://localhost:5173/__cypress/runner/cypress_runner.js:1594:10)\n    at Promise._settlePromises (http://localhost:5173/__cypress/runner/cypress_runner.js:1674:18)\n    at _drainQueueStep (http://localhost:5173/__cypress/runner/cypress_runner.js:2380:12)\n    at _drainQueue (http://localhost:5173/__cypress/runner/cypress_runner.js:2373:9)\n    at Async._drainQueues (http://localhost:5173/__cypress/runner/cypress_runner.js:2389:5)\n    at Async.drainQueues (http://localhost:5173/__cypress/runner/cypress_runner.js:2259:14)\nFrom Your Spec Code:\n    at Context.eval (webpack://sis-web-mvc/./cypress/support/commands.js:4:5)\n    at wrapped (http://localhost:5173/__cypress/runner/cypress_runner.js:155025:43)",
+                "diff": null
+              },
+              "uuid": "2b97625f-5dff-4f0f-b984-4a35d2268bcb",
+              "parentUUID": "d8599373-5f9a-4a0c-b7eb-5ed9e07b4d7a",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "3b86c729-0447-498a-bff9-0f45e0dba6b1",
+            "5efb75a6-5714-49b0-8d25-2532263315f8"
+          ],
+          "failures": [
+            "25023fcc-2198-4c4b-b8d0-ae28a57cb42b",
+            "9c2a6d17-1c25-4fbf-a8f2-77b0d8905f68",
+            "2b97625f-5dff-4f0f-b984-4a35d2268bcb"
+          ],
+          "pending": [],
+          "skipped": [],
+          "duration": 8456,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.2.0"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "8.1.1"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress/reports/html",
+        "overwrite": false,
+        "html": false,
+        "json": true
+      },
+      "version": "6.3.2"
+    }
+  }
+}

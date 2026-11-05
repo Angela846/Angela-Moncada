@@ -22,3 +22,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+*.sw?
+
+# Cypress generated files
+**/cypress/screenshots/
+**/cypress/videos/
+**/cypress/downloads/
